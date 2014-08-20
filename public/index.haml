@@ -39,6 +39,7 @@
 
 			class NegineesanReader
 				busy: false
+				max: 1206
 				pos: null
 				log: (msg)->
 					$('#debug').append $('<li>').html(msg)
@@ -84,6 +85,9 @@
 				$('#content').bottom().on 'bottom', ()->
 					return if reader.busy
 					reader.add(reader.num() + 1)
+				$('#random').on 'click', ()->
+					num = Math.floor(Math.random() * reader.max) + 1
+					reader.add(num) if !reader.busy
 				reader.add reader.num()
 				
 	%body
@@ -92,6 +96,7 @@
 				%a#top{href:'http://negineesan.com/',target:'_blank'} ねぎ姉さん
 				リーダー
 				%span#num 読み込み中
+				%a.pull-right#random{href:'#'} ■
 				%a.pull-right{"data-toggle"=>"modal","data-target"=>"#help","href"=>'#'} ?
 		%div#content
 		%div.modal.fade#help{"tabindex"=>"-1","role"=>"dialog","aria-labelledby"=>"modalLabel","aria-hidden"=>"true"}

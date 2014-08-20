@@ -48,6 +48,8 @@
       
           NegineesanReader.prototype.busy = false;
       
+          NegineesanReader.prototype.max = 1206;
+      
           NegineesanReader.prototype.pos = null;
       
           NegineesanReader.prototype.log = function(msg) {
@@ -135,6 +137,13 @@
             }
             return reader.add(reader.num() + 1);
           });
+          $('#random').on('click', function() {
+            var num;
+            num = Math.floor(Math.random() * reader.max) + 1;
+            if (!reader.busy) {
+              return reader.add(num);
+            }
+          });
           return reader.add(reader.num());
         });
       
@@ -147,6 +156,7 @@
         <a href='http://negineesan.com/' id='top' target='_blank'>ねぎ姉さん</a>
         リーダー
         <span id='num'>読み込み中</span>
+        <a class='pull-right' href='#' id='random'>■</a>
         <a class='pull-right' data-target='#help' data-toggle='modal' href='#'>?</a>
       </div>
     </nav>
