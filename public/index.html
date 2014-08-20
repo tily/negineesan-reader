@@ -3,11 +3,11 @@
   <head>
     <meta charset='utf-8'>
     <meta content='width=device-width,initial-scale=1.0' name='viewport'>
-    <script src='http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js' type='text/javascript'></script>
+    <script src='js/jquery.min.js' type='text/javascript'></script>
     <script src='js/jquery.bottom-1.0.js' type='text/javascript'></script>
     <script src='js/jquery.inview.min.js' type='text/javascript'></script>
     <script src='js/bootstrap.min.js' type='text/javascript'></script>
-    <link href='http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css' rel='stylesheet'>
+    <link href='css/bootstrap.min.css' rel='stylesheet'>
     <style>
       html, body {
       	height: 100%;
@@ -96,6 +96,7 @@
             img.on('load', (function(_this) {
               return function() {
                 $('#content').append(img);
+                $('#num').html('読み込み完了');
                 return _this.busy = false;
               };
             })(this));

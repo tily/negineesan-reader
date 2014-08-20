@@ -66,6 +66,7 @@
 						@num parseInt img.attr('data-num')
 					img.on 'load', ()=>
 						$('#content').append img
+						$('#num').html('読み込み完了')
 						@busy = false
 					img.on 'touchstart', (e)=>
 						@pos = e.originalEvent.changedTouches[0].pageX
