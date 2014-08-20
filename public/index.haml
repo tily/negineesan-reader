@@ -58,7 +58,7 @@
 					(Array(len).join('0') + num).slice(-len)
 				add: (num)->
 					@busy = true
-					$('#num').html('読み込み中')
+					$('#num').html('<strong>' + num + '</strong> 話 読み込み中')
 					img = $('<img>')
 					img.attr 'src', @url(num)
 					img.attr 'data-num', num
@@ -66,7 +66,7 @@
 						@num parseInt img.attr('data-num')
 					img.on 'load', ()=>
 						$('#content').append img
-						$('#num').html('読み込み完了')
+						$('#num').html('<strong>' + num + '</strong> 話 読み込み完了')
 						@busy = false
 					img.on 'touchstart', (e)=>
 						@pos = e.originalEvent.changedTouches[0].pageX
