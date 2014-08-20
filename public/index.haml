@@ -75,10 +75,13 @@
 					img.on 'touchend', (e)=>
 						return if @busy
 						end = e.originalEvent.changedTouches[0].pageX
+						diff = @pos - end
 						if Math.abs(@pos - end) > 100
 							num = parseInt img.attr('data-num')
+							if num <= 1 && diff > 0
+								return
 							$('img').remove()
-							@add num - (@pos - end) / Math.abs(@pos - end)
+							@add num - diff / Math.abs(diff)
 							window.scrollBy 0, document.height * (-1)
 
 			$(document).on 'ready', ()->

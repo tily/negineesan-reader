@@ -110,15 +110,19 @@
             })(this));
             return img.on('touchend', (function(_this) {
               return function(e) {
-                var end;
+                var diff, end;
                 if (_this.busy) {
                   return;
                 }
                 end = e.originalEvent.changedTouches[0].pageX;
+                diff = _this.pos - end;
                 if (Math.abs(_this.pos - end) > 100) {
                   num = parseInt(img.attr('data-num'));
+                  if (num <= 1 && diff > 0) {
+                    return;
+                  }
                   $('img').remove();
-                  _this.add(num - (_this.pos - end) / Math.abs(_this.pos - end));
+                  _this.add(num - diff / Math.abs(diff));
                   return window.scrollBy(0, document.height * (-1));
                 }
               };
