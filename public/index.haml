@@ -8,6 +8,7 @@
 		%script{src:"js/jquery.inview.min.js",type:"text/javascript"}
 		%script{src:"js/bootstrap.min.js",type:"text/javascript"}
 		%link{rel:'stylesheet',href:'css/bootstrap.min.css'}
+		%link{rel:'stylesheet',href:'css/bootstrap-glyphicons.css'}
 		:css
 			html, body {
 				height: 100%;
@@ -67,7 +68,7 @@
 						@num parseInt img.attr('data-num')
 					img.on 'load', ()=>
 						$('#content').append img
-						$('#num').html('<strong>' + num + '</strong> 話 読み込み完了')
+						$('#num').html('<strong>' + num + '</strong> 話')
 						@busy = false
 					img.on 'touchstart', (e)=>
 						@pos = e.originalEvent.changedTouches[0].pageX
@@ -97,8 +98,10 @@
 				%a#top{href:'http://negineesan.com/',target:'_blank'} ねぎ姉さん
 				リーダー
 				%span#num 読み込み中
-				%a.pull-right{"data-toggle"=>"modal","data-target"=>"#help","href"=>'#'} ?
-				%a.pull-right#random{href:'#'} &nbsp;&nbsp;&nbsp;■
+				%span.pull-right
+					%a#random{href:'#'} ■
+					&nbsp;&nbsp;&nbsp;&nbsp;
+					%a{"data-toggle"=>"modal","data-target"=>"#help","href"=>'#'} ?
 		%div#content
 		%div.modal.fade#help{"tabindex"=>"-1","role"=>"dialog","aria-labelledby"=>"modalLabel","aria-hidden"=>"true"}
 			%div.modal-dialog
