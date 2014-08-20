@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta content='width=device-width,initial-scale=1.0' name='viewport'>
+    <script src='http://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js' type='text/javascript'></script>
+    <script src='js/jquery.bottom-1.0.js' type='text/javascript'></script>
+    <script src='js/jquery.inview.min.js' type='text/javascript'></script>
+    <script src='js/bootstrap.min.js' type='text/javascript'></script>
+    <link href='http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css' rel='stylesheet'>
+    <style>
+      html, body {
+      	height: 100%;
+      }
+      img {
+      	width: 100%;
+      	margin-top: 4.0em;
+      	margin-bottom: 120%;
+      }
+      a, a:hover, a:visited {
+      	color: #68e5e5;
+      }
+      nav {
+      	padding-top: 0.5em;
+      	padding-bottom: 0.5em;
+      	background-color: black;
+      	color: white;
+      }
+      div#content {
+      	height: 100%;
+      	overflow: scroll;
+      }
+      div#loading {
+      	display: none;
+      	padding-bottom: 1em;
+      }
+    </style>
+    <script>
+      (function() {
+        var NegineesanReader;
+      
+        window.onerror = function(error, url, line) {
+          return alert(error);
+        };
+      
+        NegineesanReader = (function() {
+          function NegineesanReader() {}
+      
+          NegineesanReader.prototype.busy = false;
+      
+          NegineesanReader.prototype.pos = null;
+      
+          NegineesanReader.prototype.log = function(msg) {
+            return $('#debug').append($('<li>').html(msg));
+          };
+      
+          NegineesanReader.prototype.url = function(num) {
+            var url;
+            url = 'http://negineesan.com/comics/negi/negi';
+            url += num < 1000 ? this.pad(num, 3) : num.toString();
+            url += '.jpg';
+            return url;
+          };
+      
+          NegineesanReader.prototype.num = function(num) {
+            var match;
+            if (num) {
+              window.location.hash = num.toString();
+              return $('#num').html('<strong>' + num + '</strong> 話');
+            } else {
+              match = window.location.hash.match(/^#(.+)/);
+              if (match) {
+                return parseInt(match[1]);
+              } else {
+                return 1;
+              }
+            }
+          };
+      
+          NegineesanReader.prototype.pad = function(num, len) {
+            return (Array(len).join('0') + num).slice(-len);
+          };
+      
+          NegineesanReader.prototype.add = function(num) {
+            var img;
+            this.busy = true;
+            $('#num').html('読み込み中');
+            img = $('<img>');
+            img.attr('src', this.url(num));
+            img.attr('data-num', num);
+            img.on('inview', (function(_this) {
+              return function() {
+                return _this.num(parseInt(img.attr('data-num')));
+              };
+            })(this));
+            img.on('load', (function(_this) {
+              return function() {
+                $('#content').append(img);
+                return _this.busy = false;
+              };
+            })(this));
+            img.on('touchstart', (function(_this) {
+              return function(e) {
+                return _this.pos = e.originalEvent.changedTouches[0].pageX;
+              };
+            })(this));
+            return img.on('touchend', (function(_this) {
+              return function(e) {
+                var end;
+                if (_this.busy) {
+                  return;
+                }
+                end = e.originalEvent.changedTouches[0].pageX;
+                if (Math.abs(_this.pos - end) > 100) {
+                  num = parseInt(img.attr('data-num'));
+                  $('img').remove();
+                  _this.add(num - (_this.pos - end) / Math.abs(_this.pos - end));
+                  return window.scrollBy(0, document.height * (-1));
+                }
+              };
+            })(this));
+          };
+      
+          return NegineesanReader;
+      
+        })();
+      
+        $(document).on('ready', function() {
+          var reader;
+          reader = new NegineesanReader();
+          $('#content').bottom().on('bottom', function() {
+            if (reader.busy) {
+              return;
+            }
+            return reader.add(reader.num() + 1);
+          });
+          return reader.add(reader.num());
+        });
+      
+      }).call(this);
+    </script>
+  </head>
+  <body>
+    <nav class='navbar navbar-fixed-top'>
+      <div class='container' style='padding-top:0.5em'>
+        <a href='http://negineesan.com/' id='top' target='_blank'>ねぎ姉さん</a>
+        リーダー
+        <span id='num'>読み込み中</span>
+        <a class='pull-right' data-target='#help' data-toggle='modal' href='#'>?</a>
+      </div>
+    </nav>
+    <div id='content'></div>
+    <div aria-hidden='true' aria-labelledby='modalLabel' class='modal fade' id='help' role='dialog' tabindex='-1'>
+      <div class='modal-dialog'>
+        <div class='modal-content'>
+          <div class='modal-header'>
+            <button class='close' data-dismiss='modal' type='button'>
+              <span aria-hidden='true'>&times;</span>
+              <span class='sr-only'>Close</span>
+            </button>
+            <h4 class='modal-title' id='modalLabel'>ヘルプ</h4>
+            <div class='modal-body'>
+              <table class='table'>
+                <tr>
+                  <td>
+                    <strong>左右</strong>
+                  </td>
+                  <td>前の話／次の話へ</td>
+                </tr>
+                <tr>
+                  <td>
+                    <strong>下</strong>
+                  </td>
+                  <td>次の話を継ぎ足す</td>
+                </tr>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
