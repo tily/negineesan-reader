@@ -87,7 +87,7 @@
           NegineesanReader.prototype.add = function(num) {
             var img;
             this.busy = true;
-            $('#num').html('<strong>' + num + '</strong> 話 読み込み中');
+            $('#num').html('<strong>' + num + '</strong> 話 ...');
             img = $('<img>');
             img.attr('src', this.url(num));
             img.attr('data-num', num);
