@@ -76,13 +76,23 @@
 						return if @busy
 						end = e.originalEvent.changedTouches[0].pageX
 						diff = @pos - end
-						if Math.abs(@pos - end) > 100
+						if Math.abs(diff) > 100
 							num = parseInt img.attr('data-num')
-							if num <= 1 && diff > 0
-								return
+							if @lr() == 'lr'
+								return if num <= 1 && diff > 0
+								@add num - diff / Math.abs(diff)
+							else
+								return if num <= 1 && diff < 0
+								@add num + diff / Math.abs(diff)
 							$('img').remove()
-							@add num - diff / Math.abs(diff)
 							window.scrollBy 0, document.height * (-1)
+				lr: (mode)->
+					if mode
+						window.localStorage.setItem('lr', mode)
+						$('#lr').html if @lr() == 'lr' then '左右' else '右左'
+					else
+						window.localStorage.getItem('lr') || 'lr'
+
 
 			$(document).on 'ready', ()->
 				reader = new NegineesanReader()
@@ -93,8 +103,11 @@
 					$('img').remove()
 					num = Math.floor(Math.random() * reader.max) + 1
 					reader.add(num) if !reader.busy
+				$('#toggle-lr').on 'click', ()->
+					reader.lr if reader.lr() == 'lr' then 'rl' else 'lr'
+
 				reader.add reader.num()
-				
+				reader.lr reader.lr()
 	%body
 		%nav.navbar.navbar-fixed-top
 			%div.container{style:'padding-top:0.5em'}
@@ -118,8 +131,10 @@
 							%table.table
 								%tr
 									%td
-										%strong 左右
-									%td 前の話／次の話へ
+										%strong#lr 左右
+									%td
+										前の話／次の話へ
+										%a#toggle-lr{href:'#'} 切替
 								%tr
 									%td
 										%strong 下

@@ -116,17 +116,33 @@
                 }
                 end = e.originalEvent.changedTouches[0].pageX;
                 diff = _this.pos - end;
-                if (Math.abs(_this.pos - end) > 100) {
+                if (Math.abs(diff) > 100) {
                   num = parseInt(img.attr('data-num'));
-                  if (num <= 1 && diff > 0) {
-                    return;
+                  if (_this.lr() === 'lr') {
+                    if (num <= 1 && diff > 0) {
+                      return;
+                    }
+                    _this.add(num - diff / Math.abs(diff));
+                  } else {
+                    if (num <= 1 && diff < 0) {
+                      return;
+                    }
+                    _this.add(num + diff / Math.abs(diff));
                   }
                   $('img').remove();
-                  _this.add(num - diff / Math.abs(diff));
                   return window.scrollBy(0, document.height * (-1));
                 }
               };
             })(this));
+          };
+      
+          NegineesanReader.prototype.lr = function(mode) {
+            if (mode) {
+              window.localStorage.setItem('lr', mode);
+              return $('#lr').html(this.lr() === 'lr' ? '左右' : '右左');
+            } else {
+              return window.localStorage.getItem('lr') || 'lr';
+            }
           };
       
           return NegineesanReader;
@@ -150,7 +166,11 @@
               return reader.add(num);
             }
           });
-          return reader.add(reader.num());
+          $('#toggle-lr').on('click', function() {
+            return reader.lr(reader.lr() === 'lr' ? 'rl' : 'lr');
+          });
+          reader.add(reader.num());
+          return reader.lr(reader.lr());
         });
       
       }).call(this);
@@ -183,9 +203,12 @@
               <table class='table'>
                 <tr>
                   <td>
-                    <strong>左右</strong>
+                    <strong id='lr'>左右</strong>
                   </td>
-                  <td>前の話／次の話へ</td>
+                  <td>
+                    前の話／次の話へ
+                    <a href='#' id='toggle-lr'>切替</a>
+                  </td>
                 </tr>
                 <tr>
                   <td>
