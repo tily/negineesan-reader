@@ -86,6 +86,7 @@
 					return if reader.busy
 					reader.add(reader.num() + 1)
 				$('#random').on 'click', ()->
+					$('img').remove()
 					num = Math.floor(Math.random() * reader.max) + 1
 					reader.add(num) if !reader.busy
 				reader.add reader.num()

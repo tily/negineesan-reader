@@ -139,6 +139,7 @@
           });
           $('#random').on('click', function() {
             var num;
+            $('img').remove();
             num = Math.floor(Math.random() * reader.max) + 1;
             if (!reader.busy) {
               return reader.add(num);
