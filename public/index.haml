@@ -50,7 +50,6 @@
 				log: (msg)->
 					$('#debug').append $('<li>').html(msg)
 				url: (num)->
-					#alert num
 					url = 'http://negineesan.com/comics/negi/negi'
 					if num < 1000
 						url += @pad(num, 3)
@@ -61,7 +60,6 @@
 					else
 						url += num.toString()
 					url += '.jpg'
-					#alert url
 					url
 				num: (num)->
 					if num
@@ -70,13 +68,10 @@
 						$('title').html('ねぎ姉さん リーダー ' + num + ' 話')
 					else
 						match = window.location.hash.match(/^#(.+)/)
-						# TODO: parseInt しない
-						#if match then parseInt(match[1]) else 1
 						if match then match[1] else 1
 				mutation: (num)->
 					mutation = null
 					@mutations.forEach (_mutation)->
-						#alert _mutation
 						index = _mutation.indexOf(num)
 						mutation = {array: _mutation, index: index} if index != -1
 					mutation
