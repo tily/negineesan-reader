@@ -43,12 +43,25 @@
 				busy: false
 				max: 1206
 				pos: null
+				mutations: [
+					['245', 'UNK', '246'],
+					['692', '693a', '693b', '693c', '694', '695a', '695b', '695c', '695d', '696a', '696b', '696c', '696d', '697']
+				]
 				log: (msg)->
 					$('#debug').append $('<li>').html(msg)
 				url: (num)->
+					#alert num
 					url = 'http://negineesan.com/comics/negi/negi'
-					url += if num < 1000 then @pad(num, 3) else num.toString()
+					if num < 1000
+						url += @pad(num, 3)
+					else if match = num.toString().match(/(.+)a$/)
+						url += match[1]
+					else if num == 'UNK'
+						url += '248unk'
+					else
+						url += num.toString()
 					url += '.jpg'
+					#alert url
 					url
 				num: (num)->
 					if num
@@ -57,7 +70,28 @@
 						$('title').html('ねぎ姉さん リーダー ' + num + ' 話')
 					else
 						match = window.location.hash.match(/^#(.+)/)
-						if match then parseInt(match[1]) else 1
+						# TODO: parseInt しない
+						#if match then parseInt(match[1]) else 1
+						if match then match[1] else 1
+				mutation: (num)->
+					mutation = null
+					@mutations.forEach (_mutation)->
+						#alert _mutation
+						index = _mutation.indexOf(num)
+						mutation = {array: _mutation, index: index} if index != -1
+					mutation
+				next: ()->
+					mutation = @mutation(@num())
+					if mutation && mutation.array[mutation.index + 1]
+						mutation.array[mutation.index + 1]
+					else
+						parseInt(@num()) + 1
+				prev: ()->
+					mutation = @mutation(@num())
+					if mutation && mutation.array[mutation.index - 1]
+						mutation.array[mutation.index - 1]
+					else
+						parseInt(@num()) - 1
 				pad: (num, len)->
 					(Array(len).join('0') + num).slice(-len)
 				add: (num)->
@@ -67,7 +101,7 @@
 					img.attr 'src', @url(num)
 					img.attr 'data-num', num
 					img.on 'inview', ()=>
-						@num parseInt img.attr('data-num')
+						@num img.attr('data-num')
 					img.on 'load', ()=>
 						$('#content').append img
 						$('#num').html('<strong>' + num + '</strong> 話')
@@ -82,10 +116,10 @@
 							num = parseInt img.attr('data-num')
 							if @lr() == 'lr'
 								return if num <= 1 && diff > 0
-								@add num - diff / Math.abs(diff)
+								@add (if diff < 0 then @next() else @prev())
 							else
 								return if num <= 1 && diff < 0
-								@add num + diff / Math.abs(diff)
+								@add (if diff > 0 then @next() else @prev())
 							$('img').remove()
 							window.scrollBy 0, document.height * (-1)
 				lr: (mode)->
@@ -100,7 +134,7 @@
 				reader = new NegineesanReader()
 				$('#content').bottom().on 'bottom', ()->
 					return if reader.busy
-					reader.add(reader.num() + 1)
+					reader.add reader.next()
 				$('#random').on 'click', ()->
 					$('img').remove()
 					num = Math.floor(Math.random() * reader.max) + 1

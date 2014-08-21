@@ -54,14 +54,24 @@
       
           NegineesanReader.prototype.pos = null;
       
+          NegineesanReader.prototype.mutations = [['245', 'UNK', '246'], ['692', '693a', '693b', '693c', '694', '695a', '695b', '695c', '695d', '696a', '696b', '696c', '696d', '697']];
+      
           NegineesanReader.prototype.log = function(msg) {
             return $('#debug').append($('<li>').html(msg));
           };
       
           NegineesanReader.prototype.url = function(num) {
-            var url;
+            var match, url;
             url = 'http://negineesan.com/comics/negi/negi';
-            url += num < 1000 ? this.pad(num, 3) : num.toString();
+            if (num < 1000) {
+              url += this.pad(num, 3);
+            } else if (match = num.toString().match(/(.+)a$/)) {
+              url += match[1];
+            } else if (num === 'UNK') {
+              url += '248unk';
+            } else {
+              url += num.toString();
+            }
             url += '.jpg';
             return url;
           };
@@ -75,10 +85,46 @@
             } else {
               match = window.location.hash.match(/^#(.+)/);
               if (match) {
-                return parseInt(match[1]);
+                return match[1];
               } else {
                 return 1;
               }
+            }
+          };
+      
+          NegineesanReader.prototype.mutation = function(num) {
+            var mutation;
+            mutation = null;
+            this.mutations.forEach(function(_mutation) {
+              var index;
+              index = _mutation.indexOf(num);
+              if (index !== -1) {
+                return mutation = {
+                  array: _mutation,
+                  index: index
+                };
+              }
+            });
+            return mutation;
+          };
+      
+          NegineesanReader.prototype.next = function() {
+            var mutation;
+            mutation = this.mutation(this.num());
+            if (mutation && mutation.array[mutation.index + 1]) {
+              return mutation.array[mutation.index + 1];
+            } else {
+              return parseInt(this.num()) + 1;
+            }
+          };
+      
+          NegineesanReader.prototype.prev = function() {
+            var mutation;
+            mutation = this.mutation(this.num());
+            if (mutation && mutation.array[mutation.index - 1]) {
+              return mutation.array[mutation.index - 1];
+            } else {
+              return parseInt(this.num()) - 1;
             }
           };
       
@@ -95,7 +141,7 @@
             img.attr('data-num', num);
             img.on('inview', (function(_this) {
               return function() {
-                return _this.num(parseInt(img.attr('data-num')));
+                return _this.num(img.attr('data-num'));
               };
             })(this));
             img.on('load', (function(_this) {
@@ -124,12 +170,12 @@
                     if (num <= 1 && diff > 0) {
                       return;
                     }
-                    _this.add(num - diff / Math.abs(diff));
+                    _this.add((diff < 0 ? _this.next() : _this.prev()));
                   } else {
                     if (num <= 1 && diff < 0) {
                       return;
                     }
-                    _this.add(num + diff / Math.abs(diff));
+                    _this.add((diff > 0 ? _this.next() : _this.prev()));
                   }
                   $('img').remove();
                   return window.scrollBy(0, document.height * (-1));
@@ -158,7 +204,7 @@
             if (reader.busy) {
               return;
             }
-            return reader.add(reader.num() + 1);
+            return reader.add(reader.next());
           });
           $('#random').on('click', function() {
             var num;
