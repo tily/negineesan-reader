@@ -119,8 +119,11 @@
 							window.scrollBy 0, document.height * (-1)
 				lr: (mode)->
 					if mode
-						window.localStorage.setItem('lr', mode)
-						$('#lr').html if @lr() == 'lr' then '左右' else '右左'
+						try
+							window.localStorage.setItem('lr', mode)
+							$('#lr').html if @lr() == 'lr' then '左右' else '右左'
+						catch
+							$('#toggle-lr').remove()
 					else
 						window.localStorage.getItem('lr') || 'rl'
 

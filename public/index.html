@@ -186,8 +186,12 @@
       
           NegineesanReader.prototype.lr = function(mode) {
             if (mode) {
-              window.localStorage.setItem('lr', mode);
-              return $('#lr').html(this.lr() === 'lr' ? '左右' : '右左');
+              try {
+                window.localStorage.setItem('lr', mode);
+                return $('#lr').html(this.lr() === 'lr' ? '左右' : '右左');
+              } catch (_error) {
+                return $('#toggle-lr').remove();
+              }
             } else {
               return window.localStorage.getItem('lr') || 'rl';
             }
